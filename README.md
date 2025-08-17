@@ -29,9 +29,10 @@ They cover **machine learning, predictive analytics, cloud infrastructure perfor
 - **Skills:** Simulation methods, machine learning, game AI.
 - **File:** Group presentation.
 
-### 6. [Other Projects](./Other)
-- **Phase 1 Sample Document** – initial scoping and requirements documentation.
-- **projectORM.txt** – early-stage ORM design notes.
+### 6. [Database Programming](./Database_Programming)
+- **Goal:** Explore integration of Python with both SQL and MongoDB.
+- **Skills:** Database design, ORM concepts, SQL query building, BSON handling in MongoDB.
+- **Files:** Project documentation and ORM design notes.
 
 ---
 
