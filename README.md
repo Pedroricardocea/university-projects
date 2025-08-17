@@ -46,5 +46,5 @@ They cover **machine learning, predictive analytics, cloud infrastructure perfor
 
 ## 📬 Contact
 **Pedro Castro**  
-Email: pedroricardocastro2003@gmail.com
-LinkedIn: https://www.linkedin.com/in/pedro-ricardo-castro
+- Email: pedroricardocastro2003@gmail.com
+- LinkedIn: https://www.linkedin.com/in/pedro-ricardo-castro
