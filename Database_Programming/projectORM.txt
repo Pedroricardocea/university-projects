@@ -1,0 +1,891 @@
+from typing import List, Optional
+from sqlalchemy import String, Integer
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
+from sqlalchemy import create_engine, select, ForeignKey, String, Integer, Date, Time
+import datetime
+
+
+
+# connect your database
+engine = create_engine(
+    "postgresql+psycopg2://postgres:[put your password]@localhost:5433/pedroricardo"
+)
+
+# Classes created by Pedro Castro
+
+class Base(DeclarativeBase):
+    pass
+
+class Physician(Base):
+    __tablename__ = "physician"
+    
+    phys_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))
+    specialization: Mapped[str] = mapped_column(String(100))
+    contact_info: Mapped[str] = mapped_column(String(100))
+    clinic_id: Mapped[int] = mapped_column(Integer)
+
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="physician")
+
+    def __repr__(self) -> str: #represents the object as a string 
+        return f"Physician(phys_id={self.phys_id!r}, name={self.name!r}, specialization={self.specialization!r}, contact_info={self.contact_info!r}, clinic_id={self.clinic_id!r})"
+
+class Appointment(Base):
+    __tablename__ = "appointments"
+    
+    appt_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    patient_id: Mapped[int] = mapped_column(Integer)
+    clinic_id: Mapped[int] = mapped_column(Integer)
+    pt_id: Mapped[int] = mapped_column(Integer, nullable=True)
+    nutr_id: Mapped[int] = mapped_column(Integer, nullable=True)
+    phys_id: Mapped[int] = mapped_column(ForeignKey("physician.phys_id"))
+    date: Mapped[datetime.date] = mapped_column(Date)
+    time: Mapped[datetime.time] = mapped_column(Time)
+
+
+    physician: Mapped["Physician"] = relationship(back_populates="appointments")
+
+    def __repr__(self) -> str: #represents the object as a string 
+        return f"Appointment(appt_id={self.appt_id!r}, patient_id={self.patient_id!r}, clinic_id={self.clinic_id!r}, phys_id={self.phys_id!r}, date={self.date!r}, time={self.time!r})"
+
+
+Base.metadata.create_all(engine)
+
+# Classes created by Dylan CampBell
+
+class Clinic(Base): 
+
+    __tablename__ = "clinic" 
+     
+    clinic_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+
+    name: Mapped[str] = mapped_column(String(100)) 
+
+    address: Mapped[str] = mapped_column(String(200)) 
+
+    hours: Mapped[str] = mapped_column(String(100)) 
+
+    contact_info: Mapped[str] = mapped_column(String(100)) 
+
+     
+
+    # Relationship with physicians through employs table 
+
+    physicians: Mapped[List["Physician"]] = relationship( 
+
+        secondary="employs", 
+
+        back_populates="clinics" 
+
+    ) 
+
+    def __repr__(self) -> str: 
+
+        return f"Clinic(clinic_id={self.clinic_id!r}, name={self.name!r}, address={self.address!r})" 
+
+class Employs(Base): 
+
+    __tablename__ = "employs" 
+    phys_id: Mapped[int] = mapped_column(ForeignKey("physician.phys_id"), primary_key=True) 
+    clinic_id: Mapped[int] = mapped_column(ForeignKey("clinic.clinic_id"), primary_key=True) 
+    
+    def __repr__(self) -> str: 
+
+        return f"Employs(phys_id={self.phys_id!r}, clinic_id={self.clinic_id!r})" 
+
+# Classes created by Avery Walker
+
+class Base(DeclarativeBase): 
+
+    pass 
+  
+class Clinic(Base): 
+
+    __tablename__ = "clinic" 
+
+ 
+
+    clinic_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+
+    name: Mapped[str] = mapped_column(String(100)) 
+
+    address: Mapped[str] = mapped_column(String(200)) 
+
+    hours: Mapped[str] = mapped_column(String(100)) 
+
+    contact_info: Mapped[str] = mapped_column(String(100)) 
+
+ 
+
+    # One clinic can have many appointments 
+
+    appointments: Mapped[list["Appointment"]] = relationship(back_populates="clinic") 
+
+ 
+
+    def __repr__(self): 
+
+        return f"Clinic(clinic_id={self.clinic_id}, name={self.name})" 
+ 
+class Appointment(Base): 
+
+    __tablename__ = "appointments" 
+
+    appt_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+
+    patient_id: Mapped[int] = mapped_column(Integer) 
+
+    clinic_id: Mapped[int] = mapped_column(ForeignKey("clinic.clinic_id")) 
+
+    pt_id: Mapped[int] = mapped_column(Integer, nullable=True) 
+
+    nutr_id: Mapped[int] = mapped_column(Integer, nullable=True) 
+
+    phys_id: Mapped[int] = mapped_column(Integer, nullable=True) 
+
+    date: Mapped[datetime.date] = mapped_column(Date) 
+
+    time: Mapped[datetime.time] = mapped_column(Time) 
+
+ 
+
+    # Each appointment is linked to one clinic 
+
+    clinic: Mapped["Clinic"] = relationship(back_populates="appointments") 
+
+ 
+
+    def __repr__(self): 
+
+        return f"Appointment(appt_id={self.appt_id}, clinic_id={self.clinic_id}, date={self.date})" 
+
+Base.metadata.create_all(engine) 
+
+# Classes created by Xander Estevez
+
+engine = create_engine("postgresql+psycopg2://postgres:Comp353$@localhost:5433/postgres") 
+
+class Base(DeclarativeBase): 
+
+    pass 
+
+class PersonalTrainer(Base):  
+
+    __tablename__ = "personal_trainer" 
+
+    pt_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+    name: Mapped[str] = mapped_column(String(100)) 
+    certifications: Mapped[str] = mapped_column(String(100)) 
+    specialization: Mapped[str] = mapped_column(String(100)) 
+    availability: Mapped[str] = mapped_column(String(100)) 
+    contact_info: Mapped[str] = mapped_column(String(100)) 
+ 
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="trainer") 
+ 
+    def __repr__(self) -> str: 
+        return f"PersonalTrainer(pt_id={self.pt_id!r}, name={self.name!r})" 
+
+class Appointment(Base):  
+
+    __tablename__ = "appointments" 
+    appt_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+    patient_id: Mapped[int] = mapped_column(Integer) 
+    clinic_id: Mapped[int] = mapped_column(Integer) 
+    pt_id: Mapped[Optional[int]] = mapped_column(ForeignKey("personal_trainer.pt_id"), nullable=True) 
+    nutr_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True) 
+    phys_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True) 
+    date: Mapped[datetime.date] = mapped_column(Date) 
+    time: Mapped[datetime.time] = mapped_column(Time) 
+        
+    trainer: Mapped[Optional["PersonalTrainer"]] = relationship(back_populates="appointments") 
+ 
+    def __repr__(self) -> str: 
+        return f"Appointment(appt_id={self.appt_id!r}, pt_id={self.pt_id!r}, date={self.date!r})" 
+
+ 
+
+    Base.metadata.create_all(engine)
+
+# Classes created by Liam Rich
+
+class Patient(Base): 
+    tablename = "patient" 
+    patient_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+    name: Mapped[str] = mapped_column(String(100)) 
+    medical_history: Mapped[Optional[str]] = mapped_column(String, nullable=True) 
+    BMI: Mapped[Optional[float]] = mapped_column(Float, nullable=True) 
+    gender: Mapped[Optional[str]] = mapped_column(String(10), nullable=True) 
+    height: Mapped[Optional[float]] = mapped_column(Float, nullable=True) 
+    pContactInfo: Mapped[Optional[str]] = mapped_column(String(100), nullable=True) 
+    age: Mapped[int] = mapped_column(Integer) 
+    weight: Mapped[Optional[float]] = mapped_column(Float, nullable=True) 
+    
+    # Relationship to appointments 
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="patient") 
+ 
+    def __repr__(self) -> str: 
+        return f"Patient(patient_id={self.patient_id!r}, name={self.name!r}, age={self.age!r}, BMI={self.BMI!r})" 
+
+class Nutritionist(Base): 
+    tablename = "nutritionist" 
+    
+    nutr_id: Mapped[int] = mapped_column(Integer, primary_key=True) 
+    name: Mapped[str] = mapped_column(String(100)) 
+    specialization: Mapped[Optional[str]] = mapped_column(String(100), nullable=True) 
+    certifications: Mapped[Optional[str]] = mapped_column(String, nullable=True) 
+    nContactInfo: Mapped[Optional[str]] = mapped_column(String(100), nullable=True) 
+    
+    # Relationships 
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="nutritionist") 
+    
+    def __repr__(self) -> str: 
+        return f"Nutritionist(nutr_id={self.nutr_id!r}, name={self.name!r}, specialization={self.specialization!r})"
+
+# Object creation (data insertion) – Pedro Castro
+
+with Session(engine) as session:
+    # Insert physicians
+    dr_smith = Physician(
+        name="Dr. Smith", 
+        specialization="Family Medicine", 
+        contact_info="drsmith@example.com", 
+        clinic_id=1
+        )
+    dr_jones = Physician(
+        name="Dr. Jones", 
+        specialization="Endocrinology", 
+        contact_info="drjones@example.com", 
+        clinic_id=2
+        )
+
+    # Insert appointments
+    appt1 = Appointment(
+        patient_id=2, 
+        clinic_id=2, 
+        pt_id=2, 
+        nutr_id=2, 
+        phys_id=2, 
+        date="2025-03-21", 
+        time="11:30:00"
+        )
+    appt2 = Appointment(
+        patient_id=3, 
+        clinic_id=1, 
+        pt_id=None, 
+        nutr_id=1, 
+        phys_id=1, 
+        date="2025-03-22", 
+        time="09:00:00"
+        )
+    appt3 = Appointment(
+        patient_id=5, 
+        clinic_id=2, 
+        pt_id=1, 
+        nutr_id=2, 
+        phys_id=2, 
+        date="2025-03-24", 
+        time="12:00:00"
+        )
+    appt4 = Appointment(
+        patient_id=6, 
+        clinic_id=1, 
+        pt_id=None, 
+        nutr_id=1, 
+        phys_id=1, 
+        date="2025-03-25", 
+        time="15:00:00"
+        )
+    appt5 = Appointment(
+        patient_id=8, 
+        clinic_id=1, 
+        pt_id=2, 
+        nutr_id=2, 
+        phys_id=1, 
+        date="2025-03-27", 
+        time="09:30:00"
+        )
+
+    session.add_all([dr_smith, dr_jones, appt1, appt2, appt3, appt4, appt5])
+    session.commit()
+
+# Object creation (data insertion) – Dylan CampBell
+
+with Session(engine) as session: 
+
+    # Insert clinics 
+
+    clinic1 = Clinic( 
+
+        name="Downtown Wellness Center", 
+
+        address="123 Main St, Chicago, IL", 
+
+        hours="9:00-17:00 Mon-Fri", 
+
+        contact_info="info@downtownwellness.com" 
+
+    ) 
+
+     
+
+    clinic2 = Clinic( 
+
+        name="Lakeview Health Clinic", 
+
+        address="456 Park Ave, Chicago, IL", 
+
+        hours="8:00-19:00 Mon-Sat", 
+
+        contact_info="contact@lakeviewhealth.com" 
+
+    ) 
+
+     
+
+    clinic3 = Clinic( 
+
+        name="North Side Medical Center", 
+
+        address="789 Wilson Blvd, Chicago, IL", 
+
+        hours="7:00-18:00 Mon-Sun", 
+
+        contact_info="info@northsidemedical.com" 
+
+    ) 
+
+     
+
+    # Add clinics to session 
+
+    session.add_all([clinic1, clinic2, clinic3]) 
+
+    session.commit() 
+
+ 
+
+    # Create employs relationships 
+
+    employs_relationships = [ 
+
+        Employs(phys_id=1, clinic_id=1),  # Dr. Smith at Downtown 
+
+        Employs(phys_id=1, clinic_id=2),  # Dr. Smith also at Lakeview 
+
+        Employs(phys_id=2, clinic_id=2),  # Dr. Jones at Lakeview 
+
+        Employs(phys_id=2, clinic_id=3),  # Dr. Jones also at North Side 
+
+        Employs(phys_id=3, clinic_id=1),  # Dr. Lee at Downtown 
+
+        Employs(phys_id=4, clinic_id=3)   # Dr. Rodriguez at North Side 
+
+    ] 
+
+     
+
+    session.add_all(employs_relationships) 
+
+    session.commit() 
+
+# Object creation (data insertion) – Avery Walker 
+
+with Session(engine) as session: 
+
+# Add Clinic Info 
+
+    clinic1 = Clinic( 
+
+        name="Chicago Running Institute", 
+
+        address="111 N Wabash Ave, Chicago, IL", 
+
+        hours="8:00-18:00 Mon-Fri", 
+
+        contact_info="appts@chicagorunning.com" 
+
+    ) 
+
+    clinic2 = Clinic( 
+
+        name="Gold Coast Plastic Surgery", 
+
+        address="303 Institute Pl, Chicago, IL", 
+
+        hours="9:00-17:00 Mon-Sat", 
+
+        contact_info="appts@gcplastic.com" 
+
+    ) 
+
+ 
+
+    session.add_all([clinic1, clinic2]) 
+
+    session.commit() 
+
+ 
+
+    # Add appointments associated with each clinic 
+
+    appointments = [ 
+
+        Appointment(patient_id=1, clinic_id=clinic1.clinic_id, date=datetime.date(2025, 4, 15), time=datetime.time(9, 0)), 
+
+        Appointment(patient_id=2, clinic_id=clinic1.clinic_id, date=datetime.date(2025, 4, 16), time=datetime.time(10, 30)), 
+
+        Appointment(patient_id=3, clinic_id=clinic2.clinic_id, date=datetime.date(2025, 4, 17), time=datetime.time(11, 15)), 
+
+        Appointment(patient_id=4, clinic_id=clinic2.clinic_id, date=datetime.date(2025, 4, 18), time=datetime.time(13, 45)), 
+
+        Appointment(patient_id=5, clinic_id=clinic2.clinic_id, date=datetime.date(2025, 4, 19), time=datetime.time(15, 0)), 
+
+    ] 
+
+ 
+
+    session.add_all(appointments) 
+
+    session.commit() 
+
+# Object creation (data insertion) – Xander Estevez
+
+with Session(engine) as session:  
+
+    t1 = PersonalTrainer(name="John Doe", certifications="Certified PT", specialization="Strength",         availability="Weekdays", contact_info="john@example.com")  
+
+    t2 = PersonalTrainer(name="Emily Carter", certifications="Certified PT", specialization="Cardio", availability="Weekends", contact_info="emily@example.com") 
+
+    session.add_all([t1, t2]) 
+    session.flush()  
+ 
+    appointments = [ 
+        Appointment(patient_id=1, clinic_id=1, pt_id=t1.pt_id, date=datetime.date(2025, 4, 1), time=datetime.time(10, 0)), 
+        Appointment(patient_id=2, clinic_id=1, pt_id=t1.pt_id, date=datetime.date(2025, 4, 2), time=datetime.time(11, 0)), 
+        Appointment(patient_id=3, clinic_id=2, pt_id=t2.pt_id, date=datetime.date(2025, 4, 3), time=datetime.time(12, 0)), 
+        Appointment(patient_id=4, clinic_id=1, pt_id=t1.pt_id, date=datetime.date(2025, 4, 4), time=datetime.time(13, 0)), 
+        Appointment(patient_id=5, clinic_id=2, pt_id=t2.pt_id, date=datetime.date(2025, 4, 5), time=datetime.time(14, 0)), 
+    ] 
+ 
+    session.add_all(appointments) 
+    session.commit()
+
+# Object creation (data insertion) – Liam Rich
+
+with Session(engine) as session: 
+
+    # Insert patients 
+
+    patients = [ 
+
+        Patient( 
+
+            name="Alice Johnson", 
+
+            medical_history="Hypertension", 
+
+            BMI=24.5, 
+
+            gender="Female", 
+
+            height=165, 
+
+            pContactInfo="alice@example.com", 
+
+            age=30, 
+
+            weight=68 
+
+        ), 
+
+        Patient( 
+
+            name="Bob Williams", 
+
+            medical_history="Diabetes", 
+
+            BMI=28.3, 
+
+            gender="Male", 
+
+            height=175, 
+
+            pContactInfo="bob@example.com", 
+
+            age=45, 
+
+            weight=85 
+
+        ), 
+
+        Patient( 
+
+            name="Charlie Brown", 
+
+            medical_history="Asthma", 
+
+            BMI=22.0, 
+
+            gender="Male", 
+
+            height=180, 
+
+            pContactInfo="charlie@example.com", 
+
+            age=28, 
+
+            weight=75 
+
+        ), 
+
+        Patient( 
+
+            name="Diana Prince", 
+
+            medical_history="Anemia", 
+
+            BMI=21.5, 
+
+            gender="Female", 
+
+            height=170, 
+
+            pContactInfo="diana@example.com", 
+
+            age=33, 
+
+            weight=60 
+
+        ), 
+
+        Patient( 
+
+            name="Ethan Hunt", 
+
+            medical_history="High Cholesterol", 
+
+            BMI=26.7, 
+
+            gender="Male", 
+
+            height=182, 
+
+            pContactInfo="ethan@example.com", 
+
+            age=40, 
+
+            weight=88 
+
+        ), 
+
+        Patient( 
+
+            name="Fiona Glenanne", 
+
+            medical_history="Thyroid issues", 
+
+            BMI=23.0, 
+
+            gender="Female", 
+
+            height=168, 
+
+            pContactInfo="fiona@example.com", 
+
+            age=35, 
+
+            weight=62 
+
+        ), 
+
+        Patient( 
+
+            name="George Bailey", 
+
+            medical_history="Migraine", 
+
+            BMI=24.0, 
+
+            gender="Male", 
+
+            height=174, 
+
+            pContactInfo="george@example.com", 
+
+            age=38, 
+
+            weight=80 
+
+        ), 
+
+        Patient( 
+
+            name="Helen Parr", 
+
+            medical_history="Back Pain", 
+
+            BMI=25.0, 
+
+            gender="Female", 
+
+            height=167, 
+
+            pContactInfo="helen@example.com", 
+
+            age=42, 
+
+            weight=70 
+
+        ) 
+
+    ] 
+
+     
+
+    session.add_all(patients) 
+
+    session.commit()  
+
+with Session(engine) as session: 
+
+    nutritionists = [ 
+
+        Nutritionist( 
+
+            name="Jane Smith", 
+
+            specialization="Sports Nutrition", 
+
+            certifications="Certified Nutritionist", 
+
+            nContactInfo="janesmith@example.com" 
+
+        ), 
+
+        Nutritionist( 
+
+            name="Tom Green", 
+
+            specialization="Clinical Nutrition", 
+
+            certifications="Certified Nutritionist", 
+
+            nContactInfo="tomgreen@example.com" 
+
+        ), 
+
+        Nutritionist( 
+
+            name="Sarah Johnson", 
+
+            specialization="Weight Management", 
+
+            certifications="Registered Dietitian", 
+
+            nContactInfo="sarahjohnson@example.com" 
+
+        ), 
+
+        Nutritionist( 
+
+            name="Michael Chen", 
+
+            specialization="Metabolic Health", 
+
+            certifications="Clinical Nutritionist", 
+
+            nContactInfo="michaelchen@example.com" 
+
+        ) 
+
+    ] 
+
+     
+
+    session.add_all(nutritionists) 
+
+    session.commit() 
+    
+# Query and Output: Join Appointment and Physician to list appointments - Pedro Castro
+session = Session(engine)  
+
+print("## Pedro Castro Query##")
+
+with Session(engine) as session:
+    stmt = (
+        select(Appointment, Physician)
+        .join(Appointment.physician)
+        .order_by(Appointment.date)
+        .limit(15)
+    )
+    
+    results = session.execute(stmt).all()
+
+    for appt, phys in results:
+        print(f"{appt.date} at {appt.time} - {phys.name} ({phys.specialization})")
+
+# Query and Output - Dylan CampBell
+
+print("\n## Dylan Campbell Query - Clinic Physician Analysis ##") 
+
+with Session(engine) as session: 
+
+    # Count physicians per clinic 
+
+    stmt = ( 
+
+        select( 
+
+            Clinic.name.label("clinic_name"), 
+
+            Clinic.address, 
+
+            Clinic.hours, 
+
+            func.count(Employs.phys_id).label("physician_count") 
+
+        ) 
+
+        .select_from(Clinic) 
+
+        .join(Employs) 
+
+        .group_by(Clinic.name, Clinic.address, Clinic.hours) 
+
+        .order_by(text("physician_count DESC")) 
+
+        .limit(15) 
+
+    ) 
+
+     
+
+    results = session.execute(stmt).all() 
+
+     
+
+    print("\nClinic Physician Analysis:") 
+
+    print("=" * 80) 
+
+    print(f"{'Clinic Name':<25} {'Address':<30} {'Hours':<20} {'Physician Count':<15}") 
+
+    print("-" * 80) 
+
+     
+
+    for clinic_name, address, hours, phys_count in results: 
+
+        print(f"{clinic_name:<25} {address:<30} {hours:<20} {phys_count:<15}") 
+
+# Query and Output - Avery Walker
+
+with Session(engine) as session: 
+
+    print("\n## Avery Walker Query – Clinic Appointments ##") 
+
+    results = ( 
+
+        session.query(Appointment, Clinic) 
+
+        .join(Clinic, Appointment.clinic_id == Clinic.clinic_id) 
+
+        .order_by(Appointment.date) 
+
+        .limit(15) 
+
+        .all() 
+
+    ) 
+
+ 
+
+    print(f"{'Date':<12} {'Time':<8} {'Clinic Name':<25} {'Clinic ID':<10}") 
+
+    print("-" * 60) 
+
+ 
+
+    for appt, clinic in results: 
+
+        print(f"{appt.date}   {appt.time}   {clinic.name:<25} {clinic.clinic_id} ")
+        
+# Query and Output - Xander Estevez
+
+with Session(engine) as session: 
+
+    stmt = ( 
+
+        select(Appointment, PersonalTrainer) 
+
+        .join(Appointment.trainer) 
+
+        .order_by(Appointment.date) 
+
+        .limit(15) 
+
+    ) 
+
+  
+
+    results = session.execute(stmt).all() 
+
+  
+
+    for appt, trainer in results: 
+
+        print(f"{appt.date} at {appt.time} - {trainer.name} ({trainer.specialization})") 
+
+# Query and Output - Liam Rich
+
+# Run queries for analysis - BMI_Nutritionist_Analysis 
+
+with Session(engine) as session: 
+
+    stmt = ( 
+
+        select( 
+
+            Patient.name.label("patient_name"), 
+
+            Patient.BMI, 
+
+            Nutritionist.name.label("nutritionist_name"), 
+
+            func.count(Appointment.appt_id).label("appointment_count") 
+
+        ) 
+
+        .select_from(Patient) 
+
+        .join(Appointment, Patient.patient_id == Appointment.patient_id) 
+
+        .join(Nutritionist, Appointment.nutr_id == Nutritionist.nutr_id) 
+
+        .group_by(Patient.name, Patient.BMI, Nutritionist.name) 
+
+        .order_by(Patient.BMI.desc(), text("appointment_count DESC")) 
+
+        .limit(15) 
+
+    ) 
+
+     
+
+    results = session.execute(stmt).all() 
+
+     
+
+    print("\nPatient BMI Analysis with Nutritionist Appointment Counts:") 
+
+    print("=" * 75) 
+
+    print(f"{'Patient Name':<20} {'BMI':<8} {'Nutritionist':<20} {'Appointment Count':<15}") 
+
+    print("-" * 75) 
+
+     
+
+    for patient_name, bmi, nutritionist_name, appt_count in results: 
+
+        print(f"{patient_name:<20} {bmi:<8.1f} {nutritionist_name:<20} {appt_count:<15}") 
