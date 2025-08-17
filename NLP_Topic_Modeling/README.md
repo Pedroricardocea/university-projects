@@ -17,4 +17,4 @@ This project compares multiple approaches to **topic modeling** on text datasets
 - Model evaluation and comparison
 
 ## 🔑 Key Takeaway
-This project highlights my ability to **implement, benchmark, and evaluate NLP models** across frameworks, and optimize workflows for scalable text processing.
+This project highlights my ability to **implement, benchmark, and evaluate NLP models** across frameworks.
