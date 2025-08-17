@@ -3,7 +3,7 @@
 This project explored **SQL** and **NoSQL (MongoDB)** integration in Python applications.
 
 ## 📂 Contents
-- **Phase1_SampleDocument.pdf** – Early-stage project document outlining requirements and design.
+- **Database_Report.pdf** – Project document outlining requirements and design.
 - **projectORM.txt** – Notes/draft ORM concepts for linking MongoDB and SQL through Python.
 
 ## 🛠 Topics Covered
