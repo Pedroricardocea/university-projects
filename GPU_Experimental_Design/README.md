@@ -3,7 +3,7 @@
 This project applied **factorial design principles** to test file-processing performance across cloud-based systems and GPU configurations.
 
 ## 📂 Contents
-- **GPU_Performance_Study.pdf** – Final presentation of findings.
+- **GPU_Performance_Study.pptx** – Presentation presentation of findings.
 
 ## 🛠 Topics Covered
 - Factorial design (2×2 and higher-order experiments)
