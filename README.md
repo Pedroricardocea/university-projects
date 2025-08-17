@@ -36,7 +36,7 @@ They cover **machine learning, predictive analytics, cloud infrastructure perfor
 
 ---
 
-## 🔧 Technologies & Skills Highlighted
+## 🔧 Technologies Highlighted
 - **Programming:** Python (ML libraries: PyTorch, Scikit-learn, Gensim, BERTopic), SQL
 - **Data Science & ML:** Regression, classification, topic modeling, simulation, ANOVA
 - **Cloud & Infrastructure:** Google Cloud, GPU performance benchmarking
